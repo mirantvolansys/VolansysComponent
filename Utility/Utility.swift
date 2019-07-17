@@ -164,52 +164,6 @@ extension Date {
     }
 }
 
-//MARK: Register for local/remote push notification and get device token
-extension AppDelegate {
-    static var deviceTokenMain = ""
-    
-    func registerForRemotePushNotification(_ application: UIApplication) {
-        //We can register for remote notification by this method
-    UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
-        application.registerForRemoteNotifications()
-        UNUserNotificationCenter.current().delegate = self
-    }
-    
-    func registerForLocalNotification(_ application: UIApplication) {
-        //We can register for local notification by this method
-        let notificationCenter = UNUserNotificationCenter.current()
-        let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-        
-        notificationCenter.requestAuthorization(options: options) {
-            (didAllow, error) in
-            if !didAllow {
-                print("User has declined notifications")
-            }
-        }
-        
-        UNUserNotificationCenter.current().delegate = self
-    }
-    
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        //We can get device token by deviceTokenMain by this delegate method
-        
-        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)}) // Convert token to string
-        AppDelegate.deviceTokenMain = deviceTokenString
-        print("APNs device token: \(deviceTokenString)")
-    }
-}
 
-//MARK: extension of appdelegate when app is in foreground then also we can get notification pop up
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print(response.notification.request.content.userInfo)
-        completionHandler()
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.alert, .badge, .sound])
-    }
-}
 
 
